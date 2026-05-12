@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI Email Spam Detection — ML-powered email security dashboard demo." />
+  <title>AI Email Spam Detection System</title>
+  <!-- Premium typography: Space Grotesk + JetBrains Mono for data/cyber feel -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Font Awesome icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <!-- Animated grid / scanline overlay (cybersecurity aesthetic) -->
+  <div class="bg-effects" aria-hidden="true">
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow--1"></div>
+    <div class="bg-glow bg-glow--2"></div>
+    <div class="bg-scanlines"></div>
+    <div class="floating-orbs">
+      <span class="orb orb--a"></span>
+      <span class="orb orb--b"></span>
+      <span class="orb orb--c"></span>
+    </div>
+  </div>
+
+  <!-- Primary navigation -->
+  <header class="site-header" id="top">
+    <nav class="navbar" aria-label="Main">
+      <a class="brand" href="{{ url_for('index') }}#home">
+        <span class="brand__icon" aria-hidden="true"></span>
+        <span class="brand__text">SpamGuard<span class="brand__accent">AI</span></span>
+      </a>
+      <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="#home" class="nav-link">Home</a></li>
+        <li><a href="#features" class="nav-link">Features</a></li>
+        <li><a href="#detect" class="nav-link">Spam Detection</a></li>
+        <li><a href="#analytics" class="nav-link">Analytics</a></li>
+        {% if current_user %}
+        <li class="nav-slot--auth" aria-label="Account">
+          <div class="nav-auth-group">
+            <a href="{{ url_for('dashboard') }}" class="nav-link nav-link--compact">Dashboard</a>
+            <a href="{{ url_for('logout') }}" class="nav-link nav-link--cta nav-link--compact">Logout</a>
+          </div>
+        </li>
+        {% else %}
+        <!-- Grouped auth: Login + Register (before Contact) -->
+        <li class="nav-slot--auth" aria-label="Account actions">
+          <div class="nav-auth-group">
+            <a href="{{ url_for('login') }}" class="nav-btn nav-btn--login-solid">Login</a>
+            <a href="{{ url_for('register') }}" class="nav-link nav-link--cta nav-link--compact">Register</a>
+          </div>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero: headline, subtitle, CTA, decorative HUD elements -->
+    <section class="hero" id="home">
+      <div class="hero__content">
+        <p class="hero__badge">
+          <span class="pulse-dot" aria-hidden="true"></span>
+          Neural threat pipeline · Live demo
+        </p>
+        <h1 class="hero__title">AI-Powered Email Spam Detection System</h1>
+        <p class="hero__subtitle">
+          Detect spam emails instantly using Machine Learning and Data Analytics
+        </p>
+        <div class="hero__actions">
+          <a href="#features" class="btn btn--primary btn--glow">
+            <span>Get Started</span>
+            <svg class="btn__arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <a href="/prediction" class="btn btn--ghost">Try Detection</a>
+        </div>
+        <dl class="hero__stats">
+          <div class="stat">
+            <dt class="stat__label">Demo latency</dt>
+            <dd class="stat__value">&lt; 120ms</dd>
+          </div>
+          <div class="stat">
+            <dt class="stat__label">Signals scanned</dt>
+            <dd class="stat__value">14+</dd>
+          </div>
+          <div class="stat">
+            <dt class="stat__label">UI mode</dt>
+            <dd class="stat__value">Dark SOC</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="hero__visual" aria-hidden="true">
+        <div class="hud-card">
+          <div class="hud-card__header">
+            <span class="hud-dot"></span>
+            <span class="hud-title">inference.stream</span>
+          </div>
+          <div class="hud-card__body">
+            <div class="hud-line"><span class="mono">STATUS</span><span class="hud-ok">SECURE</span></div>
+            <div class="hud-line"><span class="mono">QUEUE</span><span>0x7f2a · idle</span></div>
+            <div class="hud-bars">
+              <span style="--h: 40%"></span>
+              <span style="--h: 72%"></span>
+              <span style="--h: 55%"></span>
+              <span style="--h: 88%"></span>
+              <span style="--h: 62%"></span>
+              <span style="--h: 95%"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prediction loading overlay (shows while /api/predict is running) -->
+      <div id="predictOverlay" class="predict-overlay" hidden aria-hidden="true">
+        <div class="predict-overlay__content">
+          <div class="predict-overlay__spinner" aria-hidden="true"></div>
+          <p class="predict-overlay__text">Analyzing email patterns with ML…</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feature grid with hover lift + icon glow -->
+    <section class="section features" id="features">
+      <div class="section__head">
+        <h2 class="section__title">AI Cybersecurity Features</h2>
+        <p class="section__lead">Premium, ML-inspired components you can present like a real-world email security platform.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <div class="feature-card__icon" data-icon="bolt">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          </div>
+          <h3 class="feature-card__title">AI Spam Detection</h3>
+          <p class="feature-card__text">Detect spam vs ham using an ML model trained on text patterns and intent signals.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-card__icon" data-icon="brain">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3a7 7 0 00-7 7v1a4 4 0 004 4h2a2 2 0 002-2V9a3 3 0 013-3 3 3 0 013 3v5h-3M9 21h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <h3 class="feature-card__title">Real-time Email Analysis</h3>
+          <p class="feature-card__text">Instant scanning of email language, punctuation, and link intent to surface risks early.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-card__icon" data-icon="shield">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          </div>
+          <h3 class="feature-card__title">Secure Authentication</h3>
+          <p class="feature-card__text">Protected dashboard access using SQLite users, hashed passwords, and Flask sessions.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-card__icon" data-icon="chart">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V5M4 19h16M8 17V9m4 8v-5m4 5v-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <h3 class="feature-card__title">Spam Probability Prediction</h3>
+          <p class="feature-card__text">Return a probability score so your system can act safely (tag, block, or quarantine).</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-card__icon" data-icon="radar">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <h3 class="feature-card__title">Machine Learning Insights</h3>
+          <p class="feature-card__text">Explainable signals and confidence values that help users trust and validate predictions.</p>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-card__icon" data-icon="dashboard">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 13h6v7H4v-7zm10-9h6v16h-6V4zM4 4h6v7H4V4z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></svg>
+          </div>
+          <h3 class="feature-card__title">Email Classification Dashboard</h3>
+          <p class="feature-card__text">Analytics cards, charts, and detection reports for monitoring model performance and trends.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Live demo: textarea + API predict -->
+    <section class="section detect" id="detect">
+      <div class="section__head">
+        <h2 class="section__title">Email Spam Detection</h2>
+        <p class="section__lead">Paste an email message below. The Flask API returns an ML prediction: <strong>Spam</strong> or <strong>Not Spam</strong>.</p>
+      </div>
+      <div class="detect-panel">
+        <div class="detect-panel__input">
+          <label for="emailBody" class="detect-label">Message content</label>
+          <textarea id="emailBody" class="detect-textarea" rows="8" placeholder="Try: 'Congratulations! You are a winner. Click here for free money!!!' vs. 'Hi team, please review the Q3 deck attached.'"></textarea>
+          <div class="detect-actions">
+            <button type="button" class="btn btn--primary btn--glow" id="predictBtn">
+              <span class="btn__spinner" id="predictSpinner" hidden aria-hidden="true"></span>
+              <span id="predictBtnLabel">Predict</span>
+            </button>
+            <button type="button" class="btn btn--ghost" id="clearBtn">Clear</button>
+          </div>
+        </div>
+        <aside class="detect-result" id="resultPanel" aria-live="polite">
+          <h3 class="detect-result__title">Prediction Result</h3>
+          <p class="detect-result__hint" id="resultHint">Run a prediction to see output.</p>
+          <div class="detect-result__box" id="resultBox" hidden>
+            <p class="detect-result__label" id="resultLabel"></p>
+            <p class="detect-result__confidence mono" id="resultConfidence"></p>
+            <p class="detect-result__message" id="resultMessage"></p>
+            <div class="detect-signals" id="resultSignals" hidden>
+              <span class="detect-signals__title mono">Signals</span>
+              <ul class="detect-signals__list" id="signalsList"></ul>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Analytics placeholders: dashboard-style charts (CSS/SVG only) -->
+    <section class="section analytics" id="analytics">
+      <div class="section__head">
+        <h2 class="section__title">AI Email Security Analytics</h2>
+        <p class="section__lead">Premium dashboard-style cards with animated chart placeholders and a monitoring feel.</p>
+      </div>
+      <div class="dash-grid">
+        <div class="dash-card">
+          <div class="dash-card__head">
+            <h3 class="dash-card__title">Spam vs Ham Analysis</h3>
+            <span class="dash-pill">7d</span>
+          </div>
+          <div class="chart chart--donut" role="img" aria-label="Donut chart placeholder: 62 percent ham, 38 percent spam">
+            <svg viewBox="0 0 120 120" class="donut-svg">
+              <circle class="donut-ring" cx="60" cy="60" r="44" />
+              <circle class="donut-seg donut-seg--spam" cx="60" cy="60" r="44" />
+            </svg>
+            <div class="donut-legend">
+              <span><i class="swatch swatch--ham"></i> Ham 62%</span>
+              <span><i class="swatch swatch--spam"></i> Spam 38%</span>
+            </div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card__head">
+            <h3 class="dash-card__title">Accuracy Graph</h3>
+            <span class="dash-pill mono">F1 0.94</span>
+          </div>
+          <div class="chart chart--bars chart--accuracy" role="img" aria-label="Bar chart placeholder for accuracy over epochs">
+            <div class="bar-col"><span style="--v: 42%"></span><small>e1</small></div>
+            <div class="bar-col"><span style="--v: 58%"></span><small>e2</small></div>
+            <div class="bar-col"><span style="--v: 71%"></span><small>e3</small></div>
+            <div class="bar-col"><span style="--v: 82%"></span><small>e4</small></div>
+            <div class="bar-col"><span style="--v: 91%"></span><small>e5</small></div>
+            <div class="bar-col"><span style="--v: 94%"></span><small>e6</small></div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card__head">
+            <h3 class="dash-card__title">Prediction Statistics</h3>
+            <span class="dash-pill">24h</span>
+          </div>
+          <div class="chart chart--line" role="img" aria-label="Line graph placeholder for email volume">
+            <svg viewBox="0 0 400 120" preserveAspectRatio="none" class="line-svg">
+              <defs>
+                <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="rgba(0, 212, 255, 0.45)"/>
+                  <stop offset="100%" stop-color="rgba(0, 212, 255, 0)"/>
+                </linearGradient>
+              </defs>
+              <path class="line-area" d="M0,90 C60,100 100,40 160,55 S280,20 400,35 L400,120 L0,120 Z" fill="url(#lineGrad)"/>
+              <path class="line-stroke" d="M0,90 C60,100 100,40 160,55 S280,20 400,35" fill="none"/>
+            </svg>
+            <div class="line-labels">
+              <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-card">
+          <div class="dash-card__head">
+            <h3 class="dash-card__title">Detection Reports</h3>
+            <span class="dash-pill mono">Live</span>
+          </div>
+          <div class="detect-reports" aria-label="Placeholder detection reports list">
+            <ul class="report-list">
+              <li><span class="report-dot report-dot--spam"></span> Suspicious marketing email blocked</li>
+              <li><span class="report-dot report-dot--ham"></span> Legitimate invoice message allowed</li>
+              <li><span class="report-dot report-dot--spam"></span> Phishing link detected (quarantine)</li>
+            </ul>
+            <div class="report-note">UI placeholder: connect your real detection pipeline for production dashboards.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Educational ML block -->
+    <section class="section ml-info" id="ml">
+      <div class="section__head">
+        <h2 class="section__title">About the machine learning stack</h2>
+        <p class="section__lead">Short explanations you can narrate during your presentation—pair with your actual notebook or model card for depth.</p>
+      </div>
+      <div class="ml-grid">
+        <article class="ml-card">
+          <h3 class="ml-card__title">Natural Language Processing (NLP)</h3>
+          <p>NLP turns raw email text into structured features: tokenization, normalization, n-grams, and embeddings that capture semantics beyond simple keyword lists.</p>
+        </article>
+        <article class="ml-card">
+          <h3 class="ml-card__title">Spam classification</h3>
+          <p>Binary or multi-class models learn boundaries between ham and spam using labeled corpora. Common approaches include Naive Bayes, SVMs, and transformer-based classifiers.</p>
+        </article>
+        <article class="ml-card">
+          <h3 class="ml-card__title">Prediction &amp; confidence</h3>
+          <p>At inference time the model outputs a probability or score. Thresholds trigger actions (block, tag, quarantine). This demo API returns a confidence value for UI display.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer: social placeholders, contact, GitHub -->
+  <footer class="site-footer" id="contact">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <span class="brand brand--footer">
+          <span class="brand__icon" aria-hidden="true"></span>
+          <span class="brand__text">SpamGuard<span class="brand__accent">AI</span></span>
+        </span>
+        <p class="footer__tagline">College project UI — Flask + vanilla JS. Replace demo rules with your trained model endpoint.</p>
+      </div>
+      <div class="footer__block">
+        <h4 class="footer__heading">Contact</h4>
+        <ul class="footer__list">
+          <li><a href="mailto:team@example.edu">team@example.edu</a></li>
+          <li><span class="mono">SOC · Building A</span></li>
+        </ul>
+
+        <h4 class="footer__heading" style="margin-top:1.25rem">Quick Links</h4>
+        <ul class="footer__list">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#detect">Spam Detection</a></li>
+          <li><a href="#analytics">Analytics</a></li>
+        </ul>
+      </div>
+      <div class="footer__block">
+        <h4 class="footer__heading">Repository</h4>
+        <a class="footer__github" href="https://github.com/yourusername/email-spam-detection" target="_blank" rel="noopener noreferrer">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.5 2.87 8.32 6.84 9.67.5.1.68-.22.68-.48 0-.24-.01-.87-.01-1.7-2.78.62-3.37-1.37-3.37-1.37-.46-1.18-1.11-1.5-1.11-1.5-.91-.63.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.25-.45-1.3.1-2.71 0 0 .84-.27 2.75 1.05A9.38 9.38 0 0112 6.84c.85 0 1.71.11 2.51.32 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.46.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.31.68.92.68 1.85 0 1.34-.01 2.42-.01 2.75 0 .27.18.59.69.48A10.01 10.01 0 0022 12.26C22 6.58 17.52 2 12 2z"/></svg>
+          GitHub (placeholder)
+        </a>
+      </div>
+      <div class="footer__social">
+        <a href="#" class="social-icon" aria-label="LinkedIn (placeholder)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM.5 8h4V23h-4V8zm7.5 0h3.8v2.1h.1c.5-1 1.8-2.1 3.7-2.1 4 0 4.7 2.6 4.7 6v9h-4v-8c0-1.9 0-4.3-2.6-4.3-2.6 0-3 2-3 4.1V23h-4V8z"/></svg></a>
+        <a href="#" class="social-icon" aria-label="X (placeholder)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 3h3.4l-7.4 8.5L23 21h-6.9l-5.4-7.1L5.5 21H2.1l7.9-9.1L2 3h7.1l4.9 6.4L18.9 3z"/></svg></a>
+        <a href="#" class="social-icon" aria-label="YouTube (placeholder)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2S23.3 4 22.4 3.1c-1.2-1.2-2.5-1.2-3.1-1.3C16.4 1.5 12 1.5 12 1.5h-.1s-4.4 0-7.3.3c-.6.1-1.9.1-3.1 1.3C.7 4 .5 6.2.5 6.2S.3 8.7.3 11.2v2.4c0 2.5.2 5 .2 5s.2 2.2 1.1 3.1c1.2 1.2 2.8 1.2 3.5 1.3 2.5.2 10.2.3 10.2.3s4.4 0 7.3-.3c.6-.1 1.9-.1 3.1-1.3.9-.9 1.1-3.1 1.1-3.1s.2-2.5.2-5v-2.4c0-2.5-.2-5-.2-5zM9.5 15.1V8.4l6.5 3.4-6.5 3.3z"/></svg></a>
+      </div>
+    </div>
+    <p class="footer__copy">&copy; <span id="year"></span> SpamGuardAI · Academic demonstration</p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

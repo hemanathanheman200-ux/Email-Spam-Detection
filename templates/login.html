@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in — Email Spam Detection System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Font Awesome (social icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+</head>
+<body class="auth-body auth-body--login">
+  <div class="auth-bg" aria-hidden="true">
+    <div class="auth-bg__grid"></div>
+    <div class="auth-bg__glow auth-bg__glow--a"></div>
+    <div class="auth-bg__glow auth-bg__glow--b"></div>
+  </div>
+
+  <div class="auth-float" aria-hidden="true">
+    <div class="auth-float__icon auth-float__icon--1">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.5"/></svg>
+    </div>
+    <div class="auth-float__icon auth-float__icon--2">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 3a7 7 0 00-7 7v1a4 4 0 004 4h2a2 2 0 002-2V9a3 3 0 013-3 3 3 0 013 3v5h-3M9 21h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <div class="auth-float__icon auth-float__icon--3">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="auth-float__icon auth-float__icon--4">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 19V5M4 19h16M8 17V9m4 8v-5m4 5v-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+  </div>
+
+  <div class="auth-shell">
+    <a class="auth-brand" href="{{ url_for('index') }}">
+      <span class="auth-brand__mark" aria-hidden="true"></span>
+      Email Spam<span class="auth-brand__accent">Detection</span>
+    </a>
+
+    <div class="auth-card">
+      <h1 class="auth-card__title">Sign in</h1>
+      <p class="auth-card__subtitle">Sign in with your username or email and password.</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="flash-stack">
+        {% for category, message in messages %}
+        <div class="flash flash--{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% endwith %}
+
+      <form class="auth-form" method="post" action="{{ url_for('login') }}" id="loginForm">
+        <div class="auth-field">
+          <label class="auth-label" for="login_username">Username or email</label>
+          <input class="auth-input auth-input--mono" type="text" id="login_username" name="username" autocomplete="username" required placeholder="Username or email" spellcheck="false" />
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" for="password">Password</label>
+          <div class="auth-input-wrap">
+            <input class="auth-input auth-input--mono" type="password" id="password" name="password" autocomplete="current-password" required placeholder="••••••••" style="padding-right: 4.5rem" />
+            <button type="button" class="auth-toggle-pw" id="togglePassword" aria-pressed="false">Show</button>
+          </div>
+        </div>
+
+        <div class="auth-row">
+          <label class="auth-check">
+            <input type="checkbox" name="remember" value="1" />
+            Remember me
+          </label>
+          <a class="auth-link auth-link--muted auth-forgot-link" href="#" onclick="event.preventDefault()">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="auth-btn"><span>Sign in</span></button>
+      </form>
+
+      <p class="auth-footer-text">
+        New here? <a class="auth-link" href="{{ url_for('register') }}">Create an account</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+</body>
+</html>

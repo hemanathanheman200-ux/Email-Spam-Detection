@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register — SpamGuardAI</title>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Font Awesome (social icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+</head>
+<body class="auth-body auth-body--register">
+  <div class="auth-bg" aria-hidden="true">
+    <div class="auth-bg__grid"></div>
+    <div class="auth-bg__glow auth-bg__glow--a"></div>
+    <div class="auth-bg__glow auth-bg__glow--b"></div>
+  </div>
+
+  <div class="auth-float" aria-hidden="true">
+    <div class="auth-float__icon auth-float__icon--1">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.5"/>
+      </svg>
+    </div>
+    <div class="auth-float__icon auth-float__icon--2">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 3a7 7 0 00-7 7v1a4 4 0 004 4h2a2 2 0 002-2V9a3 3 0 013-3 3 3 0 013 3v5h-3M9 21h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="auth-float__icon auth-float__icon--3">
+      <svg viewBox="0 0 24 24" fill="none">
+        <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="auth-float__icon auth-float__icon--4">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M4 19V5M4 19h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="auth-shell">
+    <a class="auth-brand" href="{{ url_for('index') }}">
+      <span class="auth-brand__mark" aria-hidden="true"></span>
+      SpamGuard<span class="auth-brand__accent">AI</span>
+    </a>
+
+    <div class="auth-card">
+      <h1 class="auth-card__title">Create your account</h1>
+      <p class="auth-card__subtitle">
+        Register for the AI email security demo. Passwords are securely hashed in SQLite.
+      </p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="flash-stack">
+        {% for category, message in messages %}
+        <div class="flash flash--{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% endwith %}
+
+      <form class="auth-form" method="post" action="{{ url_for('register') }}" novalidate>
+        <div class="auth-field">
+          <label class="auth-label" for="username">Username</label>
+          <input class="auth-input auth-input--mono" type="text" id="username" name="username" autocomplete="username" required maxlength="30" placeholder="e.g. hemanathan" spellcheck="false" />
+          <p class="auth-hint">Letters, numbers, and underscore only. (3–30 chars)</p>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" for="email">Email</label>
+          <input class="auth-input auth-input--mono" type="email" id="email" name="email" autocomplete="email" required placeholder="you@example.com" />
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" for="password">Password</label>
+          <div class="auth-input-wrap">
+            <input class="auth-input auth-input--mono" type="password" id="password" name="password" autocomplete="new-password" required minlength="8" placeholder="••••••••" style="padding-right: 4.5rem" />
+            <button type="button" class="auth-toggle-pw" id="togglePasswordSignup" aria-pressed="false">Show</button>
+          </div>
+          <div class="pw-meter" aria-hidden="true"><div class="pw-meter__bar js-pw-meter-bar"></div></div>
+          <p class="auth-hint" id="pwRulesHint">Use 8+ characters with at least one letter and one number.</p>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" for="confirm_password">Confirm Password</label>
+          <div class="auth-input-wrap">
+            <input class="auth-input auth-input--mono" type="password" id="confirm_password" name="confirm_password" autocomplete="new-password" required style="padding-right: 4.5rem" />
+            <button type="button" class="auth-toggle-pw" id="toggleConfirmSignup" aria-pressed="false">Show</button>
+          </div>
+          <p class="auth-hint" id="pwMatchHint"></p>
+        </div>
+
+        <button type="submit" class="auth-btn"><span>Register</span></button>
+      </form>
+
+      <div class="auth-social">
+        <p class="auth-hint auth-hint--muted">Or continue with</p>
+        <div class="auth-social__row" aria-label="Social login (placeholders)">
+          <a class="auth-social__btn" href="#" aria-label="Continue with Google"><i class="fa-brands fa-google"></i></a>
+          <a class="auth-social__btn" href="#" aria-label="Continue with GitHub"><i class="fa-brands fa-github"></i></a>
+          <a class="auth-social__btn" href="#" aria-label="Continue with X"><i class="fa-brands fa-x-twitter"></i></a>
+          <a class="auth-social__btn" href="#" aria-label="Continue with LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+      </div>
+
+      <p class="auth-footer-text">
+        Already have an account? <a class="auth-link" href="{{ url_for('login') }}">Sign in</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+</body>
+</html>
+

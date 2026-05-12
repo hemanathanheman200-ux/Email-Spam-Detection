@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email Spam Detection — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+</head>
+<body class="dashboard-body">
+  <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
+  <div class="dashboard-layout" id="dashboardLayout">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <div class="sidebar-top">
+        <div class="brand">
+          <div class="brand-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div class="brand-text">
+            <strong>SpamGuard</strong>
+            <span>Detection Suite</span>
+          </div>
+        </div>
+        <button type="button" class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar" aria-expanded="true" aria-controls="sidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+      </div>
+      <nav class="menu" id="mainNav">
+        <button type="button" class="nav-item active" data-section="dashboard" aria-current="page">
+          <span class="nav-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg></span>
+          <span class="nav-label">Dashboard</span>
+        </button>
+        <button type="button" class="nav-item" data-section="analysis">
+          <span class="nav-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg></span>
+          <span class="nav-label">Email Analysis</span>
+        </button>
+        <button type="button" class="nav-item" data-section="prediction">
+          <span class="nav-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+          <span class="nav-label">Spam Prediction</span>
+        </button>
+        <button type="button" class="nav-item" data-section="visualization">
+          <span class="nav-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+          <span class="nav-label">Data Visualization</span>
+        </button>
+        <button type="button" class="nav-item" data-section="reports">
+          <span class="nav-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg></span>
+          <span class="nav-label">Reports</span>
+        </button>
+      </nav>
+      <a class="logout" href="{{ url_for('logout') }}">
+        <span class="nav-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
+        <span class="nav-label">Logout</span>
+      </a>
+    </aside>
+
+    <main class="content" id="mainContent">
+      <header class="topbar glass-panel">
+        <div class="topbar-titles">
+          <h1 id="pageTitle">Dashboard</h1>
+          <p id="pageSubtitle">Overview of email spam detection metrics</p>
+        </div>
+        <div class="topbar-meta">
+          <span class="period-badge" id="periodBadge">{{ dashboard_data.summary.period }}</span>
+          {% if user %}<span class="user-chip">{{ user.full_name or user.email }}</span>{% endif %}
+        </div>
+      </header>
+
+      <div class="panels">
+        <!-- Dashboard -->
+        <section class="content-panel active" id="panel-dashboard" data-panel="dashboard" aria-labelledby="pageTitle" aria-hidden="false">
+          <div class="kpi-grid">
+            <article class="kpi-card gradient-1 glass-panel">
+              <div class="kpi-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+              <h3>Total Emails</h3>
+              <strong id="kpiTotal">{{ dashboard_data.summary.total }}</strong>
+            </article>
+            <article class="kpi-card gradient-2 glass-panel">
+              <div class="kpi-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
+              <h3>Spam Emails</h3>
+              <strong id="kpiSpam">{{ dashboard_data.summary.spam }}</strong>
+            </article>
+            <article class="kpi-card gradient-3 glass-panel">
+              <div class="kpi-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+              <h3>Ham Emails</h3>
+              <strong id="kpiHam">{{ dashboard_data.summary.ham }}</strong>
+            </article>
+            <article class="kpi-card gradient-4 glass-panel">
+              <div class="kpi-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20v-6M6 20V10M18 20V4"/></svg></div>
+              <h3>Detection Accuracy</h3>
+              <strong id="kpiAccuracy">{{ "%.2f"|format(dashboard_data.summary.accuracy) }}%</strong>
+            </article>
+          </div>
+          <div class="charts-row">
+            <article class="chart-card glass-panel chart-wide">
+              <h3>Spam vs Ham (over time)</h3>
+              <div class="chart-wrap"><canvas id="chartDashLine"></canvas></div>
+            </article>
+            <article class="chart-card glass-panel">
+              <h3>Distribution</h3>
+              <div class="chart-wrap chart-wrap-pie"><canvas id="chartDashPie"></canvas></div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Email Analysis -->
+        <section class="content-panel" id="panel-analysis" data-panel="analysis" aria-hidden="true">
+          <div class="toolbar glass-panel">
+            <div class="toolbar-field">
+              <label class="sr-only" for="emailSearch">Search emails</label>
+              <input type="search" id="emailSearch" class="input-glass" placeholder="Search sender or subject…" autocomplete="off" />
+            </div>
+            <div class="toolbar-field">
+              <label class="sr-only" for="emailFilter">Filter by status</label>
+              <select id="emailFilter" class="input-glass">
+                <option value="all">All statuses</option>
+                <option value="spam">Spam only</option>
+                <option value="ham">Ham only</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap glass-panel">
+            <table class="data-table" id="emailTable">
+              <thead>
+                <tr>
+                  <th>Sender</th>
+                  <th>Subject</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="emailTableBody"></tbody>
+            </table>
+            <p class="table-empty" id="emailTableEmpty" hidden>No rows match your filters.</p>
+          </div>
+        </section>
+
+        <!-- Spam Prediction -->
+        <section class="content-panel" id="panel-prediction" data-panel="prediction" aria-hidden="true">
+          <div class="predict-card glass-panel">
+            <h3>Analyze message</h3>
+            <p class="muted">Paste email body or headers. Result uses the same model as the public API.</p>
+            <label class="sr-only" for="predictText">Email content</label>
+            <textarea id="predictText" class="textarea-glass" rows="8" placeholder="Enter email content to classify…"></textarea>
+            <div class="predict-actions">
+              <button type="button" class="btn-primary" id="predictBtn">
+                <span class="btn-label">Predict Spam</span>
+                <span class="btn-spinner" id="predictSpinner" hidden aria-hidden="true"></span>
+              </button>
+            </div>
+            <div id="predictResult" class="predict-result" hidden role="status"></div>
+          </div>
+        </section>
+
+        <!-- Data Visualization -->
+        <section class="content-panel" id="panel-visualization" data-panel="visualization" aria-hidden="true">
+          <div class="viz-grid">
+            <article class="chart-card glass-panel">
+              <h3>Bar chart — volume by source</h3>
+              <div class="chart-wrap"><canvas id="chartVizBar"></canvas></div>
+            </article>
+            <article class="chart-card glass-panel">
+              <h3>Line chart — spam trend</h3>
+              <div class="chart-wrap"><canvas id="chartVizLine"></canvas></div>
+            </article>
+            <article class="chart-card glass-panel">
+              <h3>Pie chart — spam vs ham</h3>
+              <div class="chart-wrap chart-wrap-pie"><canvas id="chartVizPie"></canvas></div>
+            </article>
+            <article class="chart-card glass-panel heatmap-card">
+              <h3>Heatmap — risk by weekday × hour</h3>
+              <p class="heatmap-legend muted">Intensity = synthetic relative risk (demo)</p>
+              <div class="heatmap-wrap" id="heatmapGrid" aria-label="Risk heatmap"></div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Reports -->
+        <section class="content-panel" id="panel-reports" data-panel="reports" aria-hidden="true">
+          <div class="reports-grid">
+            <article class="report-card glass-panel">
+              <div class="report-icon" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+              <h3>Weekly Report</h3>
+              <p class="muted">Summary CSV for the last 7 days of activity.</p>
+              <button type="button" class="btn-outline" data-download="weekly">Download</button>
+            </article>
+            <article class="report-card glass-panel">
+              <div class="report-icon" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+              <h3>Monthly Report</h3>
+              <p class="muted">Extended metrics and trends (CSV).</p>
+              <button type="button" class="btn-outline" data-download="monthly">Download</button>
+            </article>
+            <article class="report-card glass-panel">
+              <div class="report-icon" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+              <h3>Spam Statistics PDF</h3>
+              <p class="muted">Print-ready PDF with headline KPIs.</p>
+              <button type="button" class="btn-outline" data-download="pdf">Download</button>
+            </article>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script id="dashboardData" type="application/json">{{ dashboard_data|tojson }}</script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
