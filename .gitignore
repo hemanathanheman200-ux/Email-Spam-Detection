@@ -1,0 +1,18 @@
+# Local Python virtual environment
+landingenv/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# Local instance DB and runtime-generated files
+instance/*.db
+instance/__pycache__/
+
+# Vercel build output
+.vercel/
+
+# Environment files
+.env
+*.env

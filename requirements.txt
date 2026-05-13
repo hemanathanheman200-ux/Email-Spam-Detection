@@ -4,6 +4,9 @@
 # --- Application ---
 # Flask: web framework (routes, templates, sessions). Installs Werkzeug, Jinja2, Click, and related libraries.
 Flask==3.1.3
+scikit-learn==1.7.2
+numpy==2.2.6
+python-dotenv==1.2.2
 
 # --- Production server ---
 # Gunicorn: WSGI HTTP server for Linux/production (containers, VMs, many PaaS hosts).

@@ -41,8 +41,13 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-for-production")
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=14)
 
-# SQLite file lives under instance/ (Flask convention; safe for local dev)
-INSTANCE_DIR = Path(__file__).resolve().parent / "instance"
+# SQLite file lives under instance/ for local dev, or /tmp on Vercel deployments.
+if os.environ.get("INSTANCE_PATH"):
+    INSTANCE_DIR = Path(os.environ["INSTANCE_PATH"])
+elif os.environ.get("VERCEL"):
+    INSTANCE_DIR = Path("/tmp")
+else:
+    INSTANCE_DIR = Path(__file__).resolve().parent / "instance"
 DATABASE_PATH = INSTANCE_DIR / "spamguard.db"
 
 # Default demo admin (created automatically if missing)
